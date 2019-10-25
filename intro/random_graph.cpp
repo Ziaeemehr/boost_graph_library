@@ -1,6 +1,7 @@
 #include <random>
 #include <utility>
 #include <iostream>
+#include <chrono>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/erdos_renyi_generator.hpp>
 #include <boost/random/linear_congruential.hpp>
@@ -9,30 +10,27 @@
 using std::cout;
 using std::endl;
 
+typedef boost::minstd_rand base_generator_type;
 typedef boost::adjacency_list<> Graph;
-// typedef adjacency_list<vecS, vecS, undirectedS> Graph;
-typedef boost::erdos_renyi_iterator<boost::minstd_rand, Graph> ERGen;
-// typedef boost::erdos_renyi_iterator<boost::mt19937, Graph> ERGen;
+typedef boost::erdos_renyi_iterator<base_generator_type, Graph> ERGenerator;
 
 int main()
 {
+    // Create graph with "N" nodes and edges with probability "p"
     using namespace std;
     using namespace boost;
-    boost::minstd_rand gen;
-    // Create graph with 10 nodes and edges with probability 0.5
+
+    base_generator_type generator;
+    unsigned long int seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+    generator.seed(seed);
     int N = 10;
     double p = 0.2;
-    Graph g(ERGen(gen, N, p), ERGen(), N);
+    Graph g(ERGenerator(generator, N, p), ERGenerator(), N);
 
     typedef graph_traits<Graph>::edge_iterator edge_iterator;
     pair<edge_iterator, edge_iterator> ei = edges(g);
 
-    // for (edge_iterator edge_iter = ei.first; edge_iter != ei.second; ++edge_iter)
-    // {
-    //     cout << "(" << source(*edge_iter, g) << ", " << target(*edge_iter, g) << ")\n";
-    // }
     vector<vector<int>> mat(N, vector<int>(N));
-
     for (edge_iterator edge_iter = ei.first; edge_iter != ei.second; ++edge_iter)
     {
         int a = source(*edge_iter, g);
@@ -52,3 +50,9 @@ int main()
 
     return 0;
 }
+
+// for (edge_iterator edge_iter = ei.first; edge_iter != ei.second; ++edge_iter)
+// {
+//     cout << "(" << source(*edge_iter, g) << ", " << target(*edge_iter, g) << ")\n";
+// }
+// typedef adjacency_list<vecS, vecS, undirectedS> Graph;
