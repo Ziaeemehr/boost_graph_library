@@ -5,6 +5,41 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 
+#include <vector>
+#include <type_traits>
+#include <typeinfo>
+#ifndef _MSC_VER
+#include <cxxabi.h>
+#endif
+#include <memory>
+#include <string>
+#include <cstdlib>
+
+template <class T>
+std::string
+type_name()
+{
+    typedef typename std::remove_reference<T>::type TR;
+    std::unique_ptr<char, void (*)(void *)> own(
+#ifndef _MSC_VER
+        abi::__cxa_demangle(typeid(TR).name(), nullptr,
+                            nullptr, nullptr),
+#else
+        nullptr,
+#endif
+        std::free);
+    std::string r = own != nullptr ? own.get() : typeid(TR).name();
+    if (std::is_const<TR>::value)
+        r += " const";
+    if (std::is_volatile<TR>::value)
+        r += " volatile";
+    if (std::is_lvalue_reference<T>::value)
+        r += "&";
+    else if (std::is_rvalue_reference<T>::value)
+        r += "&&";
+    return r;
+}
+
 using std::cout;
 using std::endl;
 
@@ -16,7 +51,7 @@ int main(int, char *[])
     // create a typedef for the Graph type
     // directedS or bidirectionalS (for directed graphs)
     // undirectedS (for undirected graphs)
-    typedef adjacency_list<vecS, vecS, bidirectionalS> Graph; 
+    typedef adjacency_list<vecS, vecS, bidirectionalS> Graph;
 
     // Make convenient labels for the vertices
     enum
@@ -28,7 +63,7 @@ int main(int, char *[])
         E,
         N
     };
-    const int num_vertices = N;
+    const int number_of_vertices = N;
     const char name[] = "ABCDE";
 
     // writing out the edges in the graph
@@ -43,14 +78,14 @@ int main(int, char *[])
             Edge(B, D),
             Edge(D, E),
         };
-    const int num_edges = sizeof(edge_array) / sizeof(edge_array[0]);
+    const int number_of_edges = sizeof(edge_array) / sizeof(edge_array[0]);
 
     // adding edge method 1 -----------------------------------------------------------------------
     // declare a graph object
-    Graph g(num_vertices);
+    Graph g(number_of_vertices);
 
     // add the edges to the graph object
-    for (int i = 0; i < num_edges; ++i)
+    for (int i = 0; i < number_of_edges; ++i)
         add_edge(edge_array[i].first, edge_array[i].second, g);
     // adding edge method 2------------------------------------------------------------------------
     // Graph g(edge_array, edge_array + sizeof(edge_array) / sizeof(Edge), num_vertices);
@@ -132,6 +167,12 @@ int main(int, char *[])
         }
         cout << endl;
     }
+    auto nv = num_vertices(g);
+    cout << "number of edges : " << num_edges(g) << endl;
+    cout << "number of vertixes : " << num_vertices(g) << endl;
+
+    // std::cout << type_name<decltype(nv)>() << '\n';
+
     
     return 0;
 }

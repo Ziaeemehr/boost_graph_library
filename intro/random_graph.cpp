@@ -24,11 +24,13 @@ int main()
     unsigned long int seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
     generator.seed(seed);
     int N = 10;
-    double p = 0.2;
+    double p = 0.5;
     Graph g(ERGenerator(generator, N, p), ERGenerator(), N);
 
     typedef graph_traits<Graph>::edge_iterator edge_iterator;
     pair<edge_iterator, edge_iterator> ei = edges(g);
+
+    // cout << "# number of edges :  " << num_edges(g) << endl;
 
     vector<vector<int>> mat(N, vector<int>(N));
     for (edge_iterator edge_iter = ei.first; edge_iter != ei.second; ++edge_iter)

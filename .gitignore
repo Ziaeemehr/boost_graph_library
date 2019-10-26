@@ -32,3 +32,5 @@ prog
 *.adjlist
 *.graphml
 *.gdf
+*.out
+
