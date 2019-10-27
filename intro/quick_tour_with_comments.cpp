@@ -51,7 +51,7 @@ int main(int, char *[])
     // create a typedef for the Graph type
     // directedS or bidirectionalS (for directed graphs)
     // undirectedS (for undirected graphs)
-    typedef adjacency_list<vecS, vecS, bidirectionalS> Graph;
+    typedef adjacency_list<vecS, vecS, undirectedS> Graph; //bidirectionalS
 
     // Make convenient labels for the vertices
     enum
@@ -173,6 +173,5 @@ int main(int, char *[])
 
     // std::cout << type_name<decltype(nv)>() << '\n';
 
-    
-    return 0;
+        return 0;
 }
